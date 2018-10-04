@@ -1,0 +1,115 @@
+# Deployment for App A
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: openliberty-12factor-app-a-deployment
+spec:
+    selector:
+        matchLabels:
+            app: 12factor-app-a
+    replicas: 2
+    template:
+        metadata:
+            labels:
+                app: 12factor-app-a
+        spec:
+            containers:
+                - name: 12factor-app-a
+                  image: openliberty-12factor-app-a:1.0-SNAPSHOT
+                  ports:
+                      - containerPort: 9080
+                      - containerPort: 9443
+                  env:
+                      - name: svcBHost
+                        value: openliberty-12factor-app-b-deployment
+                      - name: svcBPort
+                        value: "9081"
+                  livenessProbe:
+                      httpGet:
+                          path: "/health"
+                          port: 9080
+                      initialDelaySeconds: 60
+                  readinessProbe:
+                      httpGet:
+                          path: "/health"
+                          port: 9080
+                      initialDelaySeconds: 5
+---
+
+# Deployment for App B
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: openliberty-12factor-app-b-deployment
+spec:
+    selector:
+        matchLabels:
+            app: 12factor-app-b
+    replicas: 2
+    template:
+        metadata:
+            labels:
+                app: 12factor-app-b
+        spec:
+            containers:
+                - name: 12factor-app-b
+                  image: openliberty-12factor-app-b:1.0-SNAPSHOT
+                  ports:
+                      - containerPort: 9081
+                      - containerPort: 9443
+                  env:
+                      - name: lifetime
+                        value: "0"
+                      - name: failFrequency
+                        value: "4"
+                  livenessProbe:
+                      httpGet:
+                          path: "/health"
+                          port: 9081
+                      initialDelaySeconds: 60
+                  readinessProbe:
+                      httpGet:
+                          path: "/health"
+                          port: 9081
+                      initialDelaySeconds: 5
+---
+
+# Service for App A (exposes HTTP on port 30080)
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: openliberty-12factor-app-a-deployment
+spec:
+  externalTrafficPolicy: Cluster
+  ports:
+  - nodePort: 30080
+    port: 9080
+    protocol: TCP
+    targetPort: 9080
+  selector:
+    app: 12factor-app-a
+  type: NodePort
+---
+
+# Service for App B
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: openliberty-12factor-app-b-deployment
+spec:
+  ports:
+  - name: http
+    port: 9081
+    protocol: TCP
+    targetPort: 9081
+  - name: https
+    port: 9443
+    protocol: TCP
+    targetPort: 9443
+  selector:
+    app: 12factor-app-b
+  type: ClusterIP
