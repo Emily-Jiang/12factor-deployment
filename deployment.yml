@@ -21,10 +21,8 @@ spec:
                       - containerPort: 9080
                       - containerPort: 9443
                   env:
-                      - name: svcBHost
-                        value: openliberty-12factor-app-b-deployment
-                      - name: svcBPort
-                        value: "9081"
+                      - name:  application_rest_ServiceBClient_mp_rest_url 
+                        value: "http://openliberty-12factor-app-b-service:9081/demo/b"
                   livenessProbe:
                       httpGet:
                           path: "/health"
@@ -81,7 +79,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: openliberty-12factor-app-a-deployment
+  name: openliberty-12factor-app-a-service
 spec:
   externalTrafficPolicy: Cluster
   ports:
@@ -99,7 +97,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: openliberty-12factor-app-b-deployment
+  name: openliberty-12factor-app-b-service
 spec:
   ports:
   - name: http
