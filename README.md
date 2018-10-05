@@ -10,7 +10,7 @@ This repository contains an example deployment.yml for deploying 12factor-app-a 
 1. Run `eval $(minikube docker-env)` to set up your docker environment in the current terminal to connect to minikube
 1. Change to the `12factor-app-a` directory and run `mvn package -P docker-image`
 1. Change to the `12factor-app-b` directory and run `mvn package -P docker-image`
-1. Change to the directory for this repository and run `minikube apply -f deployment.yml`
+1. Change to the directory for this repository and run `kubectl apply -f deployment.yml`
     * This should deploy and start two instances of each app and expose service A on port 30080 on the minikube IP address
     * You can run `kubectl get pods` to watch your containers starting
 1. Run `minikube ip` to get the minikube IP address
