@@ -24,14 +24,12 @@ spec:
                       - name:  application_rest_ServiceBClient_mp_rest_url 
                         value: "http://openliberty-12factor-app-b-service:9081/demo/b"
                   livenessProbe:
-                      httpGet:
-                          path: "/health"
-                          port: 9080
+                      exec:
+                          command: ["sh", "-c", "curl -s http://localhost:9080/health | grep -q serviceA"]
                       initialDelaySeconds: 60
                   readinessProbe:
-                      httpGet:
-                          path: "/health"
-                          port: 9080
+                      exec:
+                          command: ["sh", "-c", "curl -s http://localhost:9080/health | grep -q serviceA"]
                       initialDelaySeconds: 5
 ---
 
@@ -63,14 +61,12 @@ spec:
                       - name: failFrequency
                         value: "4"
                   livenessProbe:
-                      httpGet:
-                          path: "/health"
-                          port: 9081
+                      exec:
+                          command: ["sh", "-c", "curl -s http://localhost:9081/health | grep -q serviceB"]
                       initialDelaySeconds: 60
                   readinessProbe:
-                      httpGet:
-                          path: "/health"
-                          port: 9081
+                      exec:
+                          command: ["sh", "-c", "curl -s http://localhost:9081/health | grep -q serviceB"]
                       initialDelaySeconds: 5
 ---
 
